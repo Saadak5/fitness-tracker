@@ -1,8 +1,10 @@
 <?php
 include 'config/db_config.php';
 
+$message = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
- 
+
     $username = $_POST['username'];
     $password = $_POST['password'];
 
@@ -23,14 +25,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->fetch();
 
         if (password_verify($password, $hashed_password)) {
-            echo "Login successful.";
+            header("Location: vote.html");
+            exit();
         } else {
-            echo "Incorrect password.";
+            $message = "Incorrect password.";
         }
     } else {
-        echo "User not found.";
+        $message = "User not found.";
     }
-
     $stmt->close();
     $conn->close();
 }
