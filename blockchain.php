@@ -8,19 +8,18 @@ if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true) {
 
 include '/u/b/e2203120/public_html/vote/config/db_config.php';
 
-// Connect to the database
+
 $conn = mysqli_connect($servername, $username, $password, $dbname);
 
-// Check the connection
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Retrieve blockchain information from the blocks table
+
 $sql_blocks = "SELECT * FROM blocks";
 $result_blocks = mysqli_query($conn, $sql_blocks);
 
-// Retrieve transaction information from the transactions table
+
 $sql_transactions = "SELECT * FROM transactions";
 $result_transactions = mysqli_query($conn, $sql_transactions);
 
@@ -89,10 +88,10 @@ $result_transactions = mysqli_query($conn, $sql_transactions);
     <?php } ?>
 
     <?php if (mysqli_num_rows($result_transactions) > 0) { ?>
-        <h2>Transactions</h2>
+        <h2>Votings</h2>
         <table>
             <tr>
-                <th>Transaction ID</th>
+                <th>Vote ID</th>
                 <th>Block ID</th>
                 <th>User ID</th>
                 <th>Team ID</th>
@@ -100,7 +99,7 @@ $result_transactions = mysqli_query($conn, $sql_transactions);
             </tr>
             <?php while ($row = mysqli_fetch_assoc($result_transactions)) { ?>
                 <tr>
-                    <td><?php echo $row['transaction_id']; ?></td>
+                    <td><?php echo $row['vote_id']; ?></td>
                     <td><?php echo $row['block_id']; ?></td>
                     <td><?php echo $row['user_id']; ?></td>
                     <td><?php echo $row['team_id']; ?></td>
@@ -118,7 +117,7 @@ $result_transactions = mysqli_query($conn, $sql_transactions);
 </html>
 
 <?php
-// Close the database connection
+
 mysqli_close($conn);
 ?>
 

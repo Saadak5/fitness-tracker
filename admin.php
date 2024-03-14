@@ -57,18 +57,17 @@
 <?php
 session_start();
 
-// Check if the form is submitted
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check if the username and password match
-    if ($_POST["username"] === "USERNAME" && $_POST["password"] === "PASSWORD") {
-        // Set session variables
+
+    if ($_POST["username"] === "saadak" && $_POST["password"] === "saadak") {
         $_SESSION["loggedin"] = true;
         $_SESSION["username"] = "saadak";
-        // Redirect to the admin panel
+      
         header("Location: blockchain.php");
         exit;
     } else {
-        // Display error message
+      
         echo "<p style='color: red;'>Invalid username or password.</p>";
     }
 }

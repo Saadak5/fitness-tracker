@@ -9,9 +9,9 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $team_name = $_POST['team']; // Retrieve the selected team name from the form
+    $team_name = $_POST['team']; 
 
-    // Mapping of team names to IDs
+    
     $team_id_map = [
         'Arsenal' => 1,
         'Manchester City' => 2,
@@ -25,9 +25,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'PSG' => 10
     ];
 
-    // Check if the selected team name exists in the mapping
+    
     if (array_key_exists($team_name, $team_id_map)) {
-        $team_id = $team_id_map[$team_name]; // Get the corresponding team ID
+        $team_id = $team_id_map[$team_name]; 
     } else {
         echo "Error: Invalid team selection.";
         exit();
