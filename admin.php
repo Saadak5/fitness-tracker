@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($_POST["username"] === "" && $_POST["password"] === "") {
         $_SESSION["loggedin"] = true;
-        $_SESSION["username"] = "saadak";
+        $_SESSION["username"] = "";
       
         header("Location: blockchain.php");
         exit;
