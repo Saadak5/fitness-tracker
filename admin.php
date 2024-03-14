@@ -60,7 +60,7 @@ session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    if ($_POST["username"] === "saadak" && $_POST["password"] === "saadak") {
+    if ($_POST["username"] === "" && $_POST["password"] === "") {
         $_SESSION["loggedin"] = true;
         $_SESSION["username"] = "saadak";
       
