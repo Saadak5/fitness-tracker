@@ -60,7 +60,7 @@ session_start();
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if the username and password match
-    if ($_POST["username"] === "saadak" && $_POST["password"] === "saadak") {
+    if ($_POST["username"] === "USERNAME" && $_POST["password"] === "PASSWORD") {
         // Set session variables
         $_SESSION["loggedin"] = true;
         $_SESSION["username"] = "saadak";
