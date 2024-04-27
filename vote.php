@@ -3,59 +3,64 @@ include '/u/b/e2203120/public_html/vote/config/db_config.php';
 
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
-    exit();
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
 
+// Process form submission to add a vote to the blockchain
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $team_name = $_POST['team']; 
+    if (!empty($_POST['team'])) {
+        $team = $_POST['team'];
 
-    
-    $team_id_map = [
-        'Arsenal' => 1,
-        'Manchester City' => 2,
-        'Liverpool' => 3,
-        'Manchester United' => 4,
-        'Chelsea' => 5,
-        'Real Madrid' => 6,
-        'Bayer Munchen' => 7,
-        'Barcelona' => 8,
-        'Ac Milan' => 9,
-        'PSG' => 10
-    ];
+        // Check if user is logged in and user_id is set in the session
+        if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];
+            
+            // Get the current timestamp
+            $timestamp = date("Y-m-d H:i:s");
 
-    
-    if (array_key_exists($team_name, $team_id_map)) {
-        $team_id = $team_id_map[$team_name]; 
+            // Get the previous hash from the last block
+            $previous_hash_sql = "SELECT current_hash FROM results ORDER BY block_id DESC LIMIT 1";
+            $previous_hash_result = $conn->query($previous_hash_sql);
+            $previous_hash_row = $previous_hash_result->fetch_assoc();
+            $previous_hash = ($previous_hash_row) ? $previous_hash_row['current_hash'] : "0 (Genesis Block)"; // Set to "0" for the genesis block if no previous block exists
+
+            // Calculate hashed data
+            $data = $team;
+            $hashed_data = hash('sha256', $data); // Example hashing algorithm (use appropriate hashing algorithm)
+
+            // Calculate current_hash
+            $current_hash = hash('sha256', $timestamp . $previous_hash . $team . $data . $hashed_data); // Calculate the hash based on other fields
+            
+            // Get the last blockchain index
+            $last_index_sql = "SELECT MAX(block_id) as max_index FROM results";
+            $last_index_result = $conn->query($last_index_sql);
+            $last_index_row = $last_index_result->fetch_assoc();
+            $current_index = $last_index_row['max_index'] + 1;
+
+            // Add the vote to the results table
+            $sql = "INSERT INTO results (block_id, user_id, timestamp, previous_hash, data, hashed_data, current_hash) VALUES ('$current_index', '$user_id', '$timestamp', '$previous_hash', '$data', '$hashed_data', '$current_hash')";
+            if (mysqli_query($conn, $sql)) {
+                // Redirect the user to result.php after successful vote insertion
+                header("Location: result.php");
+                exit(); // Ensure script execution stops after redirection
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+            }
+        } else {
+            echo "User session not found. Please log in.<br>";
+        }
     } else {
-        echo "Error: Invalid team selection.";
-        exit();
+        echo "Team selection is required.<br>";
     }
-
-    $user_id = $_SESSION['user_id'];
-
-    $conn = mysqli_connect($servername, $username, $password, $dbname);
-
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
-
-    $stmt = $conn->prepare("INSERT INTO votes (user_id, team_id, team_name, timestamp) VALUES (?, ?, ?, CURRENT_TIMESTAMP)");
-    $stmt->bind_param("iis", $user_id, $team_id, $team_name);
-
-
-    if ($stmt->execute()) {
-        header("Location: result.php");
-        exit();
-    } else {
-        echo "Error submitting vote: " . $stmt->error;
-    }
-
-    $stmt->close();
-    $conn->close();
 }
 ?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -139,6 +144,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
-
-
-
